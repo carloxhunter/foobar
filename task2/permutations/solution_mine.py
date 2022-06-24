@@ -1,3 +1,4 @@
+from collections import Counter
 import itertools
 test_List1 = [3, 1, 4, 1]
 test_List2 = [3, 1, 4, 1, 5, 9]
@@ -9,7 +10,7 @@ def solution(l):
     #comb_dict = {N:set(itertools.permutations(l))}
     comb_dict = {}
     def leqSol(N,Sols):
-        if (len(Sols) >= 0):
+        if Sols >= 0:
             #maxD = len(str(max[x for x in Sols]))
             maxD = 0
             for item in Sols:
@@ -44,26 +45,27 @@ def solution(l):
     #    if len(Sols) >= 0:break
     
     #gen our dic
+    lAux = [tuple(l)]
+    #print(lAux)
     original_numbers = {}
-    while N>0 and C <=100:
-        print('iter',N)
+    while N>0 and C <=2:
         if (N == len(l)):
-            
-            original_numbers[N] = [l]
+            original_numbers[N] = set(lAux)
         else:
             if N+1 in original_numbers:
-                prevListofNumbers = original_numbers[N+1]
+                prevListofNumbers = original_numbers[N+1]       
+                tempList=set()         
                 for listitem in prevListofNumbers:
                     for j in range(len(listitem)):
-                        newList = [x for i,x in enumerate(listitem) if i!=j]
-                        print(newList)
-                    #print('iter', N,listitem)
-                #print(original_numbers[N+1])    
+                        newList = tuple([x for i,x in enumerate(listitem) if i!=j])
+                        tempList.add(newList)
+                original_numbers[N] = tempList  
         N -=1
         C +=1
 
-    print('final: ',original_numbers)
-    if len(Sols)>0 :
+    for i, k in original_numbers.items():
+        print(i,k)
+    if Sols :
         return max(Sols)
     else: return 0
 
