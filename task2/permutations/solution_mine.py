@@ -48,7 +48,7 @@ def solution(l):
     lAux = [tuple(l)]
     #print(lAux)
     original_numbers = {}
-    while N>0 and C <=2:
+    while N>0  and C <=999:
         if (N == len(l)):
             original_numbers[N] = set(lAux)
         else:
@@ -63,8 +63,21 @@ def solution(l):
         N -=1
         C +=1
 
-    for i, k in original_numbers.items():
-        print(i,k)
+    sols2= set()
+    for idx, items in original_numbers.items():
+        #if sols2: break
+        for numberSets in items:
+            sumSet = sum(numberSets)
+            #here calculate perms
+            if sumSet%3 == 0:
+                perms = set(itertools.permutations(numberSets))
+                print(perms)    
+        
+
+
+
+    print(sols2)
+        
     if Sols :
         return max(Sols)
     else: return 0
