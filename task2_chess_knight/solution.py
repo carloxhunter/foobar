@@ -1,15 +1,15 @@
 
 def getIntFromCoordinates(x,y):
-    if x < 0 or x > 7:
+    if x < 0 or x > gridSize-1:
         return None
-    if y < 0 or y > 7:
+    if y < 0 or y > gridSize-1:
         return None
-    return 8*y+x
+    return gridSize*y+x
 def getCoordinatesFromInteger(N):
-    if N < 0 or N > 63:
+    if N < 0 or N > gridSize*gridSize-1:
         return None
-    y=N//8
-    x=N-8*y
+    y=N//gridSize
+    x=N-gridSize*y
     return (x,y)
 #at the very end neightbors distance is always 3 due knight movement.. therefore its ommited
 def getDistanceAdjacent(x1,x2,y1,y2):
@@ -119,10 +119,10 @@ def getKnightNeighbors2(x,y, unvisitedL):
 def getKnightNeighbors3(x,y, dicto):
     neighbors=[]
     x_ = x+1
-    if x_ <= 7:
+    if x_ <= gridSize-1:
         y_ = y+2
         id = getIntFromCoordinates(x_,y_)
-        if y_ <= 7 and not dicto[id].visited:
+        if y_ <= gridSize-1 and not dicto[id].visited:
             neighbors.append((x_,y_,))
         y_ = y-2
         id = getIntFromCoordinates(x_,y_)
@@ -132,17 +132,17 @@ def getKnightNeighbors3(x,y, dicto):
     if x_ >= 0:
         y_ = y+2
         id = getIntFromCoordinates(x_,y_)
-        if y_ <= 7 and not dicto[id].visited:
+        if y_ <= gridSize-1 and not dicto[id].visited:
             neighbors.append((x_,y_,))
         y_=y-2
         id = getIntFromCoordinates(x_,y_)
         if y_ >= 0:
             neighbors.append((x_,y_,))
     x_=x+2
-    if x_ <=7:
+    if x_ <=gridSize-1:
         y_=y+1
         id = getIntFromCoordinates(x_,y_)
-        if y_<=7 and not dicto[id].visited:
+        if y_<=gridSize-1 and not dicto[id].visited:
             neighbors.append((x_,y_,))
         y_=y-1
         id = getIntFromCoordinates(x_,y_)
@@ -152,7 +152,7 @@ def getKnightNeighbors3(x,y, dicto):
     if x_ >= 0:
         y_=y+1
         id = getIntFromCoordinates(x_,y_)
-        if y_<=7 and not dicto[id].visited:
+        if y_<=gridSize-1 and not dicto[id].visited:
             neighbors.append((x_,y_,))
         y_=y-1
         id = getIntFromCoordinates(x_,y_)
@@ -224,32 +224,37 @@ class Node2:
         #'unvisited neighbors:' ,self.unvisitedNeighbors)
         print('id:',self.id, 'x:',self.x,'y:',self.y,'prevNode:',self.prevNode,
         'prevNodeDist:', self.prevNodeDist, 'visited:',self.visited)
+    def printSelfAll(self):
+        print('id:',self.id, 'x:',self.x,'y:',self.y,'prevNode:',self.prevNode,
+        'prevNodeDist:', self.prevNodeDist, 'visited:',self.visited,
+        'unvisited neighbors:' ,self.unvisitedNeighbors)
     def updateMatrix(self, dicto):
         #we already know as is not weighted that the distances are all 3.. therefore they will be 1
         #since AX = 0 => X=0 by linear algebra
         if len(self.unvisitedNeighbors) > 0:
             for node in self.unvisitedNeighbors:
-                #transform to integer
                 id = getIntFromCoordinates(node[0],node[1])
-                #if previus distance to the point is bigger than 1 (every step will  be 1)
+                #if previous distance to the point is bigger than 1 (every step will  be 1)
                 #plus the previous distance from the actual point to start, then we replace
-                val = 1 + dicto[self.id].prevNodeDist
+                val = 1 + self.prevNodeDist
                 if dicto[id].prevNodeDist > val:
-                    #print('neighboor: ',id,dicto[id], 'actual node: ',self.id,dicto[self.id])
-                    #dicto[id] = ((node[0],node[1]),val,id)
-                    dicto[id].updateStatus(val, id)
-                    #print((node[0],node[1],val,id))
+                    dicto[id].updateStatus(val, self.id)
 
 class Grid:
     def __init__(self,dimx,dimy) -> None:
         self.dicto = genDict(dimx, dimy)
+        self.start = None
+        self.dest = None
+        self.path = []
     def finished(self):
         for item in self.dicto.values():
             if not item.visited:
                 return False
         return True
-    def setStart(self, N):
-        self.dicto[N].setStarter()
+    def config(self, start,dest):
+        self.start = start
+        self.dest = dest
+        self.dicto[start].setStarter()
     def getSDS(self):
         previd = -1
         prevval = 9999999
@@ -266,41 +271,66 @@ class Grid:
     def printSelf(self):
         for item in self.dicto.values():
             item.printSelf()
+    def printSelfAll(self):
+        for item in self.dicto.values():
+            item.printSelfAll()
+    def getPath(self):
+        tempPath = []
+        tempNode = self.dicto[self.dest]
+        while tempNode.id != self.start:
+            print(tempNode.id)
+            tempPath.append(tempNode)
+            tempNode = self.dicto[tempNode.prevNodeDist]
+        self.path=tempPath.reverse()
+    def printPath(self):return
 
-    
-GT = Grid(8,8)
+gridSize = 8
+GT = Grid(gridSize,gridSize)
 #print(GT.unvisited,GT.visited,GT.dict)
 count=0    
-init = 8
-dest = 27
+init = 0
+dest = 1
 initx,inity = getCoordinatesFromInteger(init)
-GT.setStart(init)
-while not GT.finished():  
-    print('iter: ',count) 
+GT.config(init,dest)
+
+while not GT.finished():
+    print('iter', count)  
     current = GT.getSDS()
-    if not current: break
     current.getUnvisitedNeighbors(GT.dicto)
-    #ok
-    #current.printSelf()
-    
     current.updateMatrix(GT.dicto)
     current.setVisited()
-    #GT.dicto = currentNode.updateMatrix(GT.dicto)
-    #GT.visited.append((x,y))
-    #GT.unvisited.remove((x,y))
-
-    
-    
+    current.printSelfAll()
     count+=1
-    if count > 100 : break
-    
+    if count > 100 or current == None: break
+GT.printSelfAll() 
+ #ok   
+#GT.printSelf()
+#ok
+#print('iter1')
+#current = GT.getSDS()
+#current.getUnvisitedNeighbors(GT.dicto)
+#current.printSelfAll()
+#current.updateMatrix(GT.dicto)
+#current.setVisited()
+#GT.printSelfAll() 
 
+#print('iter2')
+#current = GT.getSDS()
+#current.getUnvisitedNeighbors(GT.dicto)
+#current.printSelfAll()
+#current.updateMatrix(GT.dicto)
+#current.setVisited()
+#GT.printSelfAll() 
 
-#print(GT.dicto)
-#print(GT.getSDS())
-#print(GT.unvisited)
-#print(GT.visited)
+#current.getUnvisitedNeighbors(GT.dicto)
+#current.updateMatrix(GT.dicto)
+#current.setVisited()
 
-#print(GT.dicto)
-    
-GT.printSelf()
+#current = GT.getSDS()
+#print('newcurrent')
+#current.printSelfAll()
+#print('final')
+#GT.printSelf()
+#print('antes getpath')
+#GT.getPath()
+#print(init,dest,GT.path)
