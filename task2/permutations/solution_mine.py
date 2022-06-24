@@ -63,6 +63,7 @@ def solution(l):
         N -=1
         C +=1
 
+    #print(original_numbers)
     sols2= set()
     for idx, items in original_numbers.items():
         #if sols2: break
@@ -70,19 +71,27 @@ def solution(l):
             sumSet = sum(numberSets)
             #here calculate perms
             if sumSet%3 == 0:
+                biggerN = -1
                 perms = set(itertools.permutations(numberSets))
-                print(perms)    
+                for perm in perms:
+                    permNumber = int(''.join(map(str,perm)))
+                    if permNumber > biggerN:
+                        biggerN = permNumber
+                if biggerN > 0:
+                    sols2.add(biggerN)  
         
 
-
-
-    print(sols2)
         
-    if Sols :
-        return max(Sols)
+    if sols2 :
+        return max(sols2)
     else: return 0
 
     
 
+print(solution(test_List2))
 print(solution(test_List1))
+print(solution([0]))
+print(solution([1]))
+print(solution([3]))
+print(solution([31]))
 
