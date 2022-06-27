@@ -49,8 +49,8 @@ def solution(l):
         return 0
 
 
-# print(solution(test_List2))
-# print(solution(test_List1))
+print(solution(test_List2))
+print(solution(test_List1))
 # print(solution([0]))
 # print(solution([1]))
 # print(solution([3]))
