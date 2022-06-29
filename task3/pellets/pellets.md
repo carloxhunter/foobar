@@ -8,4 +8,4 @@ Example:
 - solution(4) returns 2: 4 -> 2 -> 1
 - solution(15) returns 5: 15 -> 16 -> 8 -> 4 -> 2 -> 1
 
-Beware that the input is a string, where can have up to 309 characters therefore perfomance is important. I solved in 2 ways with while loop (passed all test) and recursive, this one give the result but with big numbers gets broken. But the logic is still right so i kept it in the repo.
+Beware that the input is a string, which can be up to 309 characters therefore perfomance is important. I solved in 2 ways with while loop (passed all test) and recursive, this one give the result but with big numbers gets broken. But the logic is still right so i kept it in the repo.
