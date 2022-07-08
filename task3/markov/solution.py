@@ -16,6 +16,11 @@ def copy_matrix(M):
         for j in range(rows):
             MC[i][j] = M[i][j]
 
+def gcd(x, y):
+    while y != 0:
+        (x, y) = (y, x % y)
+    return x
+
 
 class myFrac:
     def __init__(self,up,down):
@@ -28,23 +33,31 @@ class myFrac:
             return self
         up = self.up * other.down + other.up * self.down
         do =  self.down * other.down
+        if up == do :return myFrac(1,1)
         return myFrac(up,do)
     def __sub__(self, other):
         if other.up == 0:
             return self
         up = self.up * other.down - other.up * self.down
         do =  self.down * other.down
+        if up == do :return myFrac(1,1)
         return myFrac(up,do)
     def __mul__(self, other):
         if other.up == 0:
             return myFrac(0,1)
-        return myFrac(self.up*other.up, self.down*other.down)  
+        up = self.up*other.up
+        do = self.down*other.down
+        if up == do :return myFrac(1,1)
+        return myFrac(up,do)  
     def __div__(self, other):
         if self.up == 0 and other.up != 0:
             return myFrac(0,1)
         elif other.up == 0:
-            raise ValueError('Cant divide by 0')   
-        return myFrac(self.up*other.down, self.down*other.up) 
+            raise ValueError('Cant divide by 0')
+        up = self.up*other.down
+        do = self.down*other.up
+        if up == do :return myFrac(1,1)   
+        return myFrac(up, do) 
     def __str__(self):
         if self.up == 0:
             return str(self.up)
@@ -66,6 +79,13 @@ class myFrac:
     def set(self, up, down):
         self.up = up
         self.down = down
+    def simplySelf(self):
+        gcdd = gcd(self.up, self.down)
+        self.up = self.up / gcdd
+        self.down = self.down / gcdd
+    def getsimplify(self):
+        gcdd = gcd(self.up, self.down)
+        return myFrac(self.up / gcdd, self.down / gcdd)
     
 
 
@@ -247,69 +267,71 @@ def gaussInvert(m):
             temp.append(I)
         extendedM.append(temp)
     
-
-
-    printMatrix(extendedM)
     #c=0
     print('gauss')
     for col in range(nrows):
-        print('new col!',col)
-        row = col
-        superC = 0
-        ok = True
+        #print('new col!',col)
         #find and set pivot
-        print("finding pivot..")
+        #print("finding pivot..")
         #check if element in [c][c] --> diagonal != 0
         val = extendedM[col][col]
         pivot_idx = col
-        if val.up != 0: print('pivot in CC')
+        if val.up != 0: pass #print('pivot in CC')
         else: #take the first not null and move to first pos
-            print('pivot not in CC')
+            #print('pivot not in CC')
             for j in range(col,nrows):
                 if (j > col):
                     if (extendedM[j][col] != 0):
-                        print('pivot found in pos ',j,col)
+                        #print('pivot found in pos ',j,col)
                         pivot_idx=j
                         break
                     #print(j,mres[j][col])
             #print('after loop')
-        print('pivot!', extendedM[pivot_idx])
+        #print('pivot!', extendedM[pivot_idx])
         
         
         if pivot_idx != col:
             #intercharge cc rows with pivot pos so we can have pivots in 0,0; 1,1; 2,2;... and so
-            print('intercambiando filas al pivote')
+            #print('intercambiando filas al pivote')
             pivot = extendedM[pivot_idx]
             cc_row = extendedM[col]
             extendedM[col] = pivot
             extendedM[pivot_idx] = cc_row
 
+
+
+        #printMatrix(extendedM)
             #now pivot is on CC
         val = extendedM[col][col]
         if val != 1:
             #resize pivot to 1
-            print('dejando pivote en 1 (positivo')
+            #print('dejando pivote en 1 (positivo')
             invertedVal = val.getInverse()
-            if invertedVal.up < 0:
-                invertedVal.up = -invertedVal.up
+            #print('inverrtedval',invertedVal.up * invertedVal.down)
             extendedM[col] = [k * invertedVal for k in extendedM[col]]
 
 
         #sum to down
-        print('sumando hacia abajo')
         for j in range(nrows):
             if( j != col):
+                #print('sumando hacia abajo')
                 sumRow = [extendedM[j][col]*myFrac(-1,1)* k for k in extendedM[col]]
                 extendedM[j] =  [x + y for x, y in zip(extendedM[j], sumRow)]
 
                 
 
             
+    res = []
+    for ijk in extendedM:
+        res.append(ijk[nrows:])
+    #printMatrix(extendedM)
 
-    printMatrix(extendedM)
+    for ey in res:
+        for eyy in ey:
+            eyy.simplySelf()
         
         
-    return []
+    return res
             
 
 def getIn(m):
@@ -317,7 +339,7 @@ def getIn(m):
     ncols = len(m)
     if nrows != ncols:
         return m
-    Im = identity(nrows)
+    
     #print('Q')
     #printMatrix(m)
     #print('I')
@@ -326,20 +348,18 @@ def getIn(m):
     iq = ISubsQ(m)
     #printMatrix(iq)
     #print('jiro')
-    testM = [[myFrac(0,1), myFrac(2,1), myFrac(-1,1)],[myFrac(2,1), myFrac(1,1), myFrac(2,1)],
-    [myFrac(-1,1),myFrac(2,1),myFrac(1,1)]]
-    gaussInvert(testM)
+    testM = [[myFrac(1,1), myFrac(2,1), myFrac(-1,1)],
+            [myFrac(2,1), myFrac(7,1), myFrac(2,1)],
+            [myFrac(20,1),myFrac(2,1),myFrac(0,1)]]
+    inverted = gaussInvert(testM)
+    printMatrix(inverted)
 
 
 getIn(mQ)
 
 
 
-            
-
-#print(myFrac(-6,2)+myFrac(3,1))
-
-
+#print(myFrac(11,13).getsimplify())       
 
 
 
