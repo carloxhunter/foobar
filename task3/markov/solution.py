@@ -223,106 +223,94 @@ def oppositeSigns(x, y):
     print('signcheck',x,y, val)
     return ((x ^ y) < 0);
 
+def printSideBySide(m1,m2):
+    #temp = []
+    for i in range(len(m1)):
+        temp = []
+        temp.extend(m1[i])
+        temp.append('|')
+        temp.extend(m2[i])
+        print(temp)    
+
 def gaussInvert(m):
     #this should be square matrix in order to be invertible
     nrows = len(m)
-    Im = identity(nrows)
-    mres = copy_matrix2(m)
-    printMatrix(mres)
+    #Im = identity(nrows)
+    #mres = copy_matrix2(m)
+    extendedM = []
+    for el in range(nrows):
+        temp = m[el]
+        for kel in range(nrows):
+            I = myFrac(0,1)
+            if kel == el:
+                I = myFrac(1,1)
+            temp.append(I)
+        extendedM.append(temp)
+    
+
+
+    printMatrix(extendedM)
     #c=0
     print('gauss')
-    for c in range(nrows):
-        print('new col!')
-        i = c
+    for col in range(nrows):
+        print('new col!',col)
+        row = col
         superC = 0
         ok = True
         #find and set pivot
-        print("find pivot")
-        while ok and superC <= 100 and i < nrows:
-            ### let pos 0,0 (o,c) in 1
-            """print('<--------- i',i,'c',c,'------------>',nrows)
-                #print('<--------- i',i,'c',c,'------------>')
-                val = mres[i][c]
-                if val.up == 0: 
-                    print('>----continue----<', val,'i',i,'c',c)
-                    i+=1
-                    continue
-                print('>---- not 0----<',val,'i',i,'c',c)
-                invertedVal = val.getInverse()
-                if invertedVal.up < 0:
-                    invertedVal.up = -invertedVal.up
-                pivotRow = [k * invertedVal for k in mres[i]]
-                mres[i] = pivotRow
-                for j in range(nrows):
-                    if i != j:
-                        print('i',i,'j',j,'c',c,'row', mres[j])
-                        z = -1 if mres[j][i] >= 0 else 1
-                        sumRow = [mres[j][i]*myFrac(z,1)* k for k in pivotRow]
-                        print('pivot',pivotRow, 'sumrow',sumRow,'a sumar',mres[j])
-                        mres[j] =  [x + y for x, y in zip(mres[j], sumRow)]"""
-            val = mres[i][c]
-            print('<---------val', val,'i',i,'c',c,'-------->')
-            #if is 0 (not wanted or.. we already found our pivot)
-            if val.up == 0: 
-                    #print(mres[i][c].up)
-                    print('>----continue----<')
-                    #i+=1
-            elif mres[i][c].up == 1:
-                print('pivot found')
-                pivotRow= mres[i]
-                pivot_idx = i
-                ok = False
-            else:        
-                print('>---- not 0----<')
-                invertedVal = val.getInverse()
-                if invertedVal.up < 0:
-                    invertedVal.up = -invertedVal.up
-                pivotRow = [k * invertedVal for k in mres[i]]
-                mres[i] = pivotRow
-                pivot_idx = i
-                ok = False
+        print("finding pivot..")
+        #check if element in [c][c] --> diagonal != 0
+        val = extendedM[col][col]
+        pivot_idx = col
+        if val.up != 0: print('pivot in CC')
+        else: #take the first not null and move to first pos
+            print('pivot not in CC')
+            for j in range(col,nrows):
+                if (j > col):
+                    if (extendedM[j][col] != 0):
+                        print('pivot found in pos ',j,col)
+                        pivot_idx=j
+                        break
+                    #print(j,mres[j][col])
+            #print('after loop')
+        print('pivot!', extendedM[pivot_idx])
+        
+        
+        if pivot_idx != col:
+            #intercharge cc rows with pivot pos so we can have pivots in 0,0; 1,1; 2,2;... and so
+            print('intercambiando filas al pivote')
+            pivot = extendedM[pivot_idx]
+            cc_row = extendedM[col]
+            extendedM[col] = pivot
+            extendedM[pivot_idx] = cc_row
 
-            i+=1
-            #if i < nrows: ok = mres[i][c].up != 1
-            superC +=1
-        printMatrix(mres)
+            #now pivot is on CC
+        val = extendedM[col][col]
+        if val != 1:
+            #resize pivot to 1
+            print('dejando pivote en 1 (positivo')
+            invertedVal = val.getInverse()
+            if invertedVal.up < 0:
+                invertedVal.up = -invertedVal.up
+            extendedM[col] = [k * invertedVal for k in extendedM[col]]
 
-        #i = 0
-        print('pivot',pivotRow)
-        print("add pivot to cc")
-        """ for j in range(nrows):
-                if j != pivot_idx:
-                    print('J.I.R.O j',j,'c',c,'row', mres[j])
-                    if mres[j][c].up == 0:  
-                        mres[j] =  [x + y for x, y in zip(mres[j], pivotRow)]
-                    else:
-                        z = -1 if mres[j][c].up >= 0 else 1
-                        sumRow = [mres[j][c]*myFrac(z,1)* k for k in pivotRow]
-                        print('pivot',pivotRow, 'sumrow',sumRow,'a sumar',mres[j])
-                        mres[j] =  [x + y for x, y in zip(mres[j], sumRow)] """
-        if pivot_idx == c:
-            print('pivot is on [c][c]')
-        else:
-            if mres[c][c].up == 0: #add
-                mres[c] = [x + y for x, y in zip(mres[c], pivotRow)]
 
-        if mres[c][c].up*mres[c][c].down <= 0:
-            mres[c] = [myFrac(-1,1) * k for k in mres[c]]
-        print('jon')
-        printMatrix(mres)
-        #add to all (other -not [c][c]- rows)
+        #sum to down
+        print('sumando hacia abajo')
         for j in range(nrows):
-            if j != c:            
-                sumRow = [mres[j][c]*myFrac(-1,1)* k for k in mres[c]]
-                print('pivot',mres[c], ' ->> sumrow',sumRow,'a al',mres[j])
-                mres[j] =  [x + y for x, y in zip(mres[j], sumRow)]   
+            if( j != col):
+                sumRow = [extendedM[j][col]*myFrac(-1,1)* k for k in extendedM[col]]
+                extendedM[j] =  [x + y for x, y in zip(extendedM[j], sumRow)]
 
-        printMatrix(mres)
+                
+
+            
+
+    printMatrix(extendedM)
         
-        #break
         
-    return mres
-        
+    return []
+            
 
 def getIn(m):
     nrows = len(m)
@@ -338,7 +326,7 @@ def getIn(m):
     iq = ISubsQ(m)
     #printMatrix(iq)
     #print('jiro')
-    testM = [[myFrac(1,1), myFrac(2,1), myFrac(-1,1)],[myFrac(2,1), myFrac(1,1), myFrac(2,1)],
+    testM = [[myFrac(0,1), myFrac(2,1), myFrac(-1,1)],[myFrac(2,1), myFrac(1,1), myFrac(2,1)],
     [myFrac(-1,1),myFrac(2,1),myFrac(1,1)]]
     gaussInvert(testM)
 
