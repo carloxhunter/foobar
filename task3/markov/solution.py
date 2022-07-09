@@ -1,6 +1,6 @@
  
 def solution(m):
-    #thanks https://stackoverflow.com/questions/11175131/code-for-greatest-common-divisor-in-python
+    #gdc https://stackoverflow.com/questions/11175131/code-for-greatest-common-divisor-in-python
     def gcd(x, y):
         while y != 0:
             (x, y) = (y, x % y)
@@ -72,7 +72,7 @@ def solution(m):
             gcdd = gcd(self.up, self.down)
             self.up = self.up / gcdd
             self.down = self.down / gcdd
-        #thanks to https://stackoverflow.com/questions/37237954/calculate-the-lcm-of-a-list-of-given-numbers-in-python
+        #simplify https://stackoverflow.com/questions/37237954/calculate-the-lcm-of-a-list-of-given-numbers-in-python
         def getsimplify(self):
             gcdd = gcd(self.up, self.down)
             return myFrac(self.up / gcdd, self.down / gcdd)
@@ -177,41 +177,45 @@ def solution(m):
             lcm *= i.down // gcd(lcm, i.down)
         res = [x.up * (lcm / x.down)  for x in row]
         res.append(lcm)
-        #found out that idk what part of proccess the number was set to L
+        #found out that idk what part of proccess the number  in some tries was set to L
         #while clearly a number < fit on integer
-        #dirty trick
+        #so made this 'dirty trick' to 'solve' it
         res = [str(x) for x in res]
         res = [int(x) for x in res]
         return res
-    #thanks to https://stackoverflow.com/questions/69803358/swapping-columns-of-a-matrix-without-numpy
+    #col swapper https://stackoverflow.com/questions/69803358/swapping-columns-of-a-matrix-without-numpy
     def col_swapper(matrix, col_1, col_2):
         for line in range(len(matrix)):
             matrix[line][col_1], matrix[line][col_2] = matrix[line][col_2], matrix[line][col_1]
     def row_swapper(matrix, row1,row2):
         for col in range(len(matrix)):
             matrix[row1][col], matrix[row2][col] = matrix[row2][col], matrix[row1][col]
-    def getCanonicalForm(m):
-        #thanks: https://www.youtube.com/watch?v=BsOkOaB8SFk
-        absts = []
-        Lm = len(m) -1 
-        for i, abst in enumerate(m):
-            if sum(abst) == 0:
-                absts.append(i)
-        for iax, ax in enumerate(absts):
-            col_swapper(m,ax,Lm-iax)
-            row_swapper(m,ax,Lm-iax)  
+    def getCanonicalForm2(m):
+        #understanding of it : https://www.youtube.com/watch?v=BsOkOaB8SFk
+        trans = []
+        for i, val in enumerate(m):
+            if sum(val) > 0:
+                trans.append(i)
+        for idx_in_list, idx_in_matrix in enumerate(trans):
+            col_swapper(m,idx_in_list,idx_in_matrix)
+            row_swapper(m,idx_in_list,idx_in_matrix)
+        return m   
     #actual process
-    #print(len(m))
+    #check if is empty
     if (len(m) == 0):
         return []
+    #check if has 1 state only
     if(len(m) == 1):
         return [1,1]
-    getCanonicalForm(m)
+    #get canonical form
+    getCanonicalForm2(m)
+    #set myFrac class to the actual matrix to work with
     Mown, absStates = prepMatrix3(m)   
     mQ, mR = defineSubM1(Mown, absStates[0])
     iq = ISubsQ(mQ)
     mN = getIn(iq)
     mB = matmult(mN, mR)
+    #just simplify the matrix
     for ey in mB:
         for eyy in ey:
             eyy.simplySelf()
@@ -220,43 +224,17 @@ def solution(m):
 
 
 
-from gigachad import M57, R57   
+from gigachad import *  
 
 
-M = M57  
-R = R57 
+M = M54  
+R = R54 
 
 
-#sol = solution(M)
-#print(sol)
-#print(R)
+sol = solution(M)
+print(sol)
+print(R)
 
-def printMatrix(m):
-        for row in m:
-            print(row)
 
-def col_swapper(matrix, col_1, col_2):
-        for line in range(len(matrix)):
-            matrix[line][col_1], matrix[line][col_2] = matrix[line][col_2], matrix[line][col_1]
-def row_swapper(matrix, row1,row2):
-        for col in range(len(matrix)):
-            matrix[row1][col], matrix[row2][col] = matrix[row2][col], matrix[row1][col]
 
-def getCanonicalForm(m):
-        #thanks: https://www.youtube.com/watch?v=BsOkOaB8SFk
-        absts = []
-        Lm = len(m) -1 
-        for i, abst in enumerate(m):
-            if sum(abst) == 0:
-                absts.append(i)
-        print(absts)
-        for iax, ax in enumerate(absts):
-            print('ax',ax,'Lm-iax',Lm-iax)
-            col_swapper(m,ax,Lm-iax)
-            row_swapper(m,ax,Lm-iax)
-        return m 
-printMatrix(M57)
-print('espacio')
-mt = getCanonicalForm(M57)
-printMatrix(mt)
 
