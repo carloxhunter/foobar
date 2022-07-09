@@ -1,9 +1,6 @@
  
-
-
-
-
 def solution(m):
+    #thanks https://stackoverflow.com/questions/11175131/code-for-greatest-common-divisor-in-python
     def gcd(x, y):
         while y != 0:
             (x, y) = (y, x % y)
@@ -47,7 +44,7 @@ def solution(m):
             up = self.up*other.down
             do = self.down*other.up
             if up == do :return myFrac(1,1)   
-            return myFrac(up, do) 
+            return myFrac(up, do)
         def __str__(self):
             if self.up == 0:
                 return str(self.up)
@@ -75,6 +72,7 @@ def solution(m):
             gcdd = gcd(self.up, self.down)
             self.up = self.up / gcdd
             self.down = self.down / gcdd
+        #thanks to https://stackoverflow.com/questions/37237954/calculate-the-lcm-of-a-list-of-given-numbers-in-python
         def getsimplify(self):
             gcdd = gcd(self.up, self.down)
             return myFrac(self.up / gcdd, self.down / gcdd)
@@ -113,6 +111,7 @@ def solution(m):
                     M[i][j] = - valj  
         return M
     def gaussInvert(m):
+        #just observed how matrixcalc did it and replicated the steps
         #this should be square matrix in order to be invertible
         nrows = len(m)
         extendedM = []
@@ -178,7 +177,13 @@ def solution(m):
             lcm *= i.down // gcd(lcm, i.down)
         res = [x.up * (lcm / x.down)  for x in row]
         res.append(lcm)
+        #found out that idk what part of proccess the number was set to L
+        #while clearly a number < fit on integer
+        #dirty trick
+        res = [str(x) for x in res]
+        res = [int(x) for x in res]
         return res
+    #thanks to https://stackoverflow.com/questions/69803358/swapping-columns-of-a-matrix-without-numpy
     def col_swapper(matrix, col_1, col_2):
         for line in range(len(matrix)):
             matrix[line][col_1], matrix[line][col_2] = matrix[line][col_2], matrix[line][col_1]
@@ -196,6 +201,11 @@ def solution(m):
             col_swapper(m,ax,Lm-iax)
             row_swapper(m,ax,Lm-iax)  
     #actual process
+    #print(len(m))
+    if (len(m) == 0):
+        return []
+    if(len(m) == 1):
+        return [1,1]
     getCanonicalForm(m)
     Mown, absStates = prepMatrix3(m)   
     mQ, mR = defineSubM1(Mown, absStates[0])
@@ -208,51 +218,45 @@ def solution(m):
     finalres = getRowSol(mB[0])
     return finalres
 
-M1 = [[0,2,1,0,0],
-      [0,0,0,3,4],
-      [0,0,0,0,0],
-      [0,0,0,0,0],
-      [0,0,0,0,0]]
-M2 = [[0, 1, 0, 0, 0, 1],
-      [4, 0, 0, 3, 2, 0],
-      [0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0]]
 
 
-M3 = [[1, 1, 1, 1, 1,],
-      [0, 0, 0, 0, 0,], 
-      [1, 1, 1, 1, 1,], 
-      [0, 0, 0, 0, 0,], 
-      [1, 1, 1, 1, 1,]]
-
-M4 = [[0,3,3,4],
-      [0,0,0,0],
-      [0,0,0,0],
-      [8,1,1,0]]
-
-M = M1  
-
-#def printMatrix(m):
-#        for row in m:
-#            print(row)
-
-#inspired by: https://stackoverflow.com/questions/69803358/swapping-columns-of-a-matrix-without-numpy
+from gigachad import M57, R57   
 
 
-  
-    
-#print('antes')
-#printMatrix(M)
-#getCanonicalForm(M)
-#print('despues')
-#printMatrix(M)
-
-   
-
-sol = solution(M)
-print(sol)
+M = M57  
+R = R57 
 
 
+#sol = solution(M)
+#print(sol)
+#print(R)
+
+def printMatrix(m):
+        for row in m:
+            print(row)
+
+def col_swapper(matrix, col_1, col_2):
+        for line in range(len(matrix)):
+            matrix[line][col_1], matrix[line][col_2] = matrix[line][col_2], matrix[line][col_1]
+def row_swapper(matrix, row1,row2):
+        for col in range(len(matrix)):
+            matrix[row1][col], matrix[row2][col] = matrix[row2][col], matrix[row1][col]
+
+def getCanonicalForm(m):
+        #thanks: https://www.youtube.com/watch?v=BsOkOaB8SFk
+        absts = []
+        Lm = len(m) -1 
+        for i, abst in enumerate(m):
+            if sum(abst) == 0:
+                absts.append(i)
+        print(absts)
+        for iax, ax in enumerate(absts):
+            print('ax',ax,'Lm-iax',Lm-iax)
+            col_swapper(m,ax,Lm-iax)
+            row_swapper(m,ax,Lm-iax)
+        return m 
+printMatrix(M57)
+print('espacio')
+mt = getCanonicalForm(M57)
+printMatrix(mt)
 
