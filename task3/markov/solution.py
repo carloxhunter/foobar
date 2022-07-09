@@ -189,6 +189,13 @@ def matmult(a,b):
     # zip_b = list(zip_b)
     return [[sum(ele_a*ele_b for ele_a, ele_b in zip(row_a, col_b)) 
              for col_b in zip_b] for row_a in a]   
+def getRowSol(row):
+    lcm = 1
+    for i in row:
+        lcm *= i.down // gcd(lcm, i.down)
+    res = [x.up * (lcm / x.down)  for x in row]
+    res.append(lcm)
+    return res
 
 
 
@@ -222,7 +229,8 @@ for ey in mB:
 printMatrix(mB)
 
 
-       
+finalres = getRowSol(mB[0])
+print(finalres)   
 
 
 
