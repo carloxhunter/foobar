@@ -1,18 +1,5 @@
-M1 = [[0,2,1,0,0],
-      [0,0,0,3,4],
-      [0,0,0,0,0],
-      [0,0,0,0,0],
-      [0,0,0,0,0]]
-M2 = [[0, 1, 0, 0, 0, 1],
-      [4, 0, 0, 3, 2, 0],
-      [0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0]]
-M = M2   
-#testM = [[myFrac(1,1), myFrac(2,1), myFrac(-1,1)],
-#            [myFrac(2,1), myFrac(7,1), myFrac(2,1)],
-#            [myFrac(20,1),myFrac(2,1),myFrac(0,1)]]
+ 
+
 
 
 
@@ -113,9 +100,6 @@ def solution(m):
                     temp.append(myFrac(item,1))
             res.append(temp)
         return res, absStates
-    def printMatrix(m):
-        for row in m:
-            print(row)
     def ISubsQ(M):
         nrows = len(M)
         ncols = len(M[0])
@@ -195,7 +179,24 @@ def solution(m):
         res = [x.up * (lcm / x.down)  for x in row]
         res.append(lcm)
         return res
+    def col_swapper(matrix, col_1, col_2):
+        for line in range(len(matrix)):
+            matrix[line][col_1], matrix[line][col_2] = matrix[line][col_2], matrix[line][col_1]
+    def row_swapper(matrix, row1,row2):
+        for col in range(len(matrix)):
+            matrix[row1][col], matrix[row2][col] = matrix[row2][col], matrix[row1][col]
+    def getCanonicalForm(m):
+        #thanks: https://www.youtube.com/watch?v=BsOkOaB8SFk
+        absts = []
+        Lm = len(m) -1 
+        for i, abst in enumerate(m):
+            if sum(abst) == 0:
+                absts.append(i)
+        for iax, ax in enumerate(absts):
+            col_swapper(m,ax,Lm-iax)
+            row_swapper(m,ax,Lm-iax)  
     #actual process
+    getCanonicalForm(m)
     Mown, absStates = prepMatrix3(m)   
     mQ, mR = defineSubM1(Mown, absStates[0])
     iq = ISubsQ(mQ)
@@ -207,6 +208,48 @@ def solution(m):
     finalres = getRowSol(mB[0])
     return finalres
 
+M1 = [[0,2,1,0,0],
+      [0,0,0,3,4],
+      [0,0,0,0,0],
+      [0,0,0,0,0],
+      [0,0,0,0,0]]
+M2 = [[0, 1, 0, 0, 0, 1],
+      [4, 0, 0, 3, 2, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]]
+
+
+M3 = [[1, 1, 1, 1, 1,],
+      [0, 0, 0, 0, 0,], 
+      [1, 1, 1, 1, 1,], 
+      [0, 0, 0, 0, 0,], 
+      [1, 1, 1, 1, 1,]]
+
+M4 = [[0,3,3,4],
+      [0,0,0,0],
+      [0,0,0,0],
+      [8,1,1,0]]
+
+M = M1  
+
+#def printMatrix(m):
+#        for row in m:
+#            print(row)
+
+#inspired by: https://stackoverflow.com/questions/69803358/swapping-columns-of-a-matrix-without-numpy
+
+
+  
+    
+#print('antes')
+#printMatrix(M)
+#getCanonicalForm(M)
+#print('despues')
+#printMatrix(M)
+
+   
 
 sol = solution(M)
 print(sol)
