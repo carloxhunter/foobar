@@ -76,28 +76,6 @@ def solution(m):
         def getsimplify(self):
             gcdd = gcd(self.up, self.down)
             return myFrac(self.up / gcdd, self.down / gcdd)
-    def defineSubM1(m, firstAbs):
-        mQ = []
-        mR = []
-        for vali in m[:firstAbs]:
-            mQ.append(vali[:firstAbs])
-            mR.append(vali[firstAbs:])
-        return mQ, mR
-    def prepMatrix3(m):
-        res = []
-        absStates= []
-        for i, row in enumerate(m):
-            temp=[]
-            sumVal = sum(row)
-            if sumVal == 0:
-                absStates.append(i)
-            for item in row:
-                if sumVal != 0:
-                    temp.append(myFrac(item,sumVal))
-                else:
-                    temp.append(myFrac(item,1))
-            res.append(temp)
-        return res, absStates
     def ISubsQ(M):
         nrows = len(M)
         ncols = len(M[0])
@@ -180,26 +158,34 @@ def solution(m):
         #found out that idk what part of proccess the number  in some tries was set to L
         #while clearly a number < fit on integer
         #so made this 'dirty trick' to 'solve' it
-        res = [str(x) for x in res]
-        res = [int(x) for x in res]
+        #res = [str(x) for x in res]
+        #res = [int(x) for x in res]
         return res
-    #col swapper https://stackoverflow.com/questions/69803358/swapping-columns-of-a-matrix-without-numpy
-    def col_swapper(matrix, col_1, col_2):
-        for line in range(len(matrix)):
-            matrix[line][col_1], matrix[line][col_2] = matrix[line][col_2], matrix[line][col_1]
-    def row_swapper(matrix, row1,row2):
-        for col in range(len(matrix)):
-            matrix[row1][col], matrix[row2][col] = matrix[row2][col], matrix[row1][col]
-    def getCanonicalForm2(m):
-        #understanding of it : https://www.youtube.com/watch?v=BsOkOaB8SFk
+    def getCanonicalForm4(m):
         trans = []
-        for i, val in enumerate(m):
-            if sum(val) > 0:
-                trans.append(i)
-        for idx_in_list, idx_in_matrix in enumerate(trans):
-            col_swapper(m,idx_in_list,idx_in_matrix)
-            row_swapper(m,idx_in_list,idx_in_matrix)
-        return m   
+        absorbs = []
+        sumT = []
+        for idrow, row in enumerate(m):
+            if sum(row) == 0:
+                absorbs.append(idrow)
+            else:
+                sumT.append(sum(row))
+                trans.append(idrow)
+        mQ = []
+        mR = []
+        for idt, t1 in enumerate(trans):
+            mQt = []
+            mRt = []
+            for t2 in trans:
+                nv = myFrac(m[t1][t2],sumT[idt])
+                mQt.append(nv)
+            for ab in absorbs:
+                nv = myFrac(m[t1][ab],sumT[idt])
+                mRt.append(nv)
+            mQ.append(mQt)
+            mR.append(mRt)
+        
+        return mQ, mR
     #actual process
     #check if is empty
     if (len(m) == 0):
@@ -207,11 +193,15 @@ def solution(m):
     #check if has 1 state only
     if(len(m) == 1):
         return [1,1]
-    #get canonical form
-    getCanonicalForm2(m)
-    #set myFrac class to the actual matrix to work with
-    Mown, absStates = prepMatrix3(m)   
-    mQ, mR = defineSubM1(Mown, absStates[0])
+    #check if state 0 is terminal, i.e all will fall here
+    if(sum(m[0]) == 0):
+        sl=[]
+        for x in m:
+            sl.append(0)
+        sl[0]=1
+        sl[-1]=1
+        return sl
+    mQ, mR = getCanonicalForm4(m)
     iq = ISubsQ(mQ)
     mN = getIn(iq)
     mB = matmult(mN, mR)
@@ -224,16 +214,7 @@ def solution(m):
 
 
 
-from gigachad import *  
 
-
-M = M54  
-R = R54 
-
-
-sol = solution(M)
-print(sol)
-print(R)
 
 
 
