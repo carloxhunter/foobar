@@ -35,3 +35,5 @@ https://stackoverflow.com/questions/37237954/calculate-the-lcm-of-a-list-of-give
     #Q: Trans to Trans, R: Trans to Absorb
     #thanks https://www.youtube.com/watch?v=BsOkOaB8SFk
 
+a
+
