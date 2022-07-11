@@ -23,3 +23,15 @@ So, putting that together, and making a common denominator, gives an answer in t
 
 absorving markovs
 http://www.dim.uchile.cl/~mkiwi/ma34a/libro/ch11.pdf
+Gcd
+https://stackoverflow.com/questions/11175131/code-for-greatest-common-divisor-in-python
+simplify
+https://stackoverflow.com/questions/37237954/calculate-the-lcm-of-a-list-of-given-numbers-in-python
+
+#i was struggin with this one for about 4 days to work proberly
+    #triying to order the big Matrix.. given a 2nd..3rd..4th try i realized
+    #is not nescesary to reorder it.. you just have to take the probs
+    # (or quantities here) from each transitory and absorving state and order them
+    #Q: Trans to Trans, R: Trans to Absorb
+    #thanks https://www.youtube.com/watch?v=BsOkOaB8SFk
+

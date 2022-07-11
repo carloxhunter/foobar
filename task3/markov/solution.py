@@ -1,6 +1,4 @@
- 
 def solution(m):
-    #gdc https://stackoverflow.com/questions/11175131/code-for-greatest-common-divisor-in-python
     def gcd(x, y):
         while y != 0:
             (x, y) = (y, x % y)
@@ -72,7 +70,6 @@ def solution(m):
             gcdd = gcd(self.up, self.down)
             self.up = self.up / gcdd
             self.down = self.down / gcdd
-        #simplify https://stackoverflow.com/questions/37237954/calculate-the-lcm-of-a-list-of-given-numbers-in-python
         def getsimplify(self):
             gcdd = gcd(self.up, self.down)
             return myFrac(self.up / gcdd, self.down / gcdd)
@@ -89,8 +86,6 @@ def solution(m):
                     M[i][j] = - valj  
         return M
     def gaussInvert(m):
-        #just observed how matrixcalc did it and replicated the steps
-        #this should be square matrix in order to be invertible
         nrows = len(m)
         extendedM = []
         for el in range(nrows):
@@ -139,27 +134,32 @@ def solution(m):
         nrows = len(m)
         ncols = len(m)
         if nrows != ncols:
-            raise Exception('Should be square matrix')
-        #maybe some further checks someday    
-        inverted = gaussInvert(m)
+            raise Exception('Should be square matrix')    
+        inverted = gaussInvert(m) #maybe some further checks someday
         return inverted
-    def matmult(a,b):
-        #thanks to akavall
-        #https://stackoverflow.com/questions/10508021/matrix-multiplication-in-pure-python
-        zip_b = zip(*b)
-        return [[sum(ele_a*ele_b for ele_a, ele_b in zip(row_a, col_b)) 
-                for col_b in zip_b] for row_a in a]   
+    def matrixmult(m1,m2):
+      def dot(K, L):
+            if len(K) != len(L):
+                  return 0
+            return sum(i[0] * i[1] for i in zip(K, L))
+      m1_cols = len(m1[0])
+      m1_rows=len(m1)
+      if m1_cols != len(m2): #this shouldnt happen, ever
+          return m1
+      m2_rows = len(m2)
+      m2_cols = len(m2[0])
+      mult = [[0 for col in range(m2_cols)] for row in range(m1_rows)]
+      m2T = [list(i) for i in zip(*m2)]
+      for row in range(m1_rows):
+          for col in range(m2_cols):
+                mult[row][col] = dot(m1[row],m2T[col])
+      return mult
     def getRowSol(row):
         lcm = 1
         for i in row:
             lcm *= i.down // gcd(lcm, i.down)
         res = [x.up * (lcm / x.down)  for x in row]
         res.append(lcm)
-        #found out that idk what part of proccess the number  in some tries was set to L
-        #while clearly a number < fit on integer
-        #so made this 'dirty trick' to 'solve' it
-        #res = [str(x) for x in res]
-        #res = [int(x) for x in res]
         return res
     def getCanonicalForm4(m):
         trans = []
@@ -184,7 +184,6 @@ def solution(m):
                 mRt.append(nv)
             mQ.append(mQt)
             mR.append(mRt)
-        
         return mQ, mR
     #actual process
     #check if is empty
@@ -204,7 +203,7 @@ def solution(m):
     mQ, mR = getCanonicalForm4(m)
     iq = ISubsQ(mQ)
     mN = getIn(iq)
-    mB = matmult(mN, mR)
+    mB = matrixmult(mN, mR)
     #just simplify the matrix
     for ey in mB:
         for eyy in ey:
